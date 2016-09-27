@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 
 class GuestBookController extends Controller
@@ -15,7 +14,8 @@ class GuestBookController extends Controller
      */
     public function index()
     {
-        //
+
+        return view('home');
     }
 
     /**
