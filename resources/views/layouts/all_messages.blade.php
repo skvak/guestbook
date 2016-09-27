@@ -1,7 +1,3 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: mfa
- * Date: 27.09.16
- * Time: 20:48
- */
+<div>
+    <p>All messages</p>
+</div>
