@@ -48,7 +48,13 @@
                                         <td>{{ $message->ip }}</td>
                                         <td>{{ $message->browser_name }}</td>
                                         <td>{{ $message->message }}</td>
-                                        <td>{{ $message->path }}</td>
+                                        <td>
+                                            @if(isset($message->path))
+                                                <a href="{{ $message->path }}" target="_blank">File</a>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td>{{ $message->created_at }}</td>
                                         <td>
                                             <a href="{{ url('/delete/'.$message->id) }}">

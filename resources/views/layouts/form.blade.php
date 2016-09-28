@@ -1,7 +1,7 @@
 <div class="panel-body">
     <div class="row">
         <div class="col-md-12">
-            <form action="{{ url('/store') }}" method="POST" class="form-horizontal">
+            <form action="{{ url('/store') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
                 {!! csrf_field() !!}
                 <div class="hidden-xs-down hidden-sm-down hidden-md-down col-lg-1">
                 </div>
@@ -39,6 +39,12 @@
                         <div class="col-sm-9 col-md-9">
                             <textarea class="form-control input" id="message" name="message"
                                    placeholder="Enter message" required>{{ old('message') }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group input">
+                        <label class="control-label col-sm-3 col-md-3" for="file">File:</label>
+                        <div class="col-sm-9 col-md-9">
+                            <input type="file" name="file" class="form-control input-sm">
                         </div>
                     </div>
                     <div class="form-group">
