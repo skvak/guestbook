@@ -12,3 +12,9 @@
 */
 
 Route::get('/', 'GuestBookController@index');
+
+Route::get('/add', 'GuestBookController@create');
+
+Route::post('/store', 'GuestBookController@store');
+
+Route::get('/delete/{id}', 'GuestBookController@destroy');
