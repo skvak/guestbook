@@ -16,11 +16,12 @@ class CreateTriggerForDeleteSiteuser extends Migration
         CREATE TRIGGER delete_user BEFORE DELETE ON `messages` FOR EACH ROW
         BEGIN
         DECLARE m INT;
-        SELECT count(user_id) into m from messages where messages.user_id=old.user_id;
-        if m = 1 then
-        delete from siteusers where siteusers.id=old.user_id;
-        end if;
-        end
+        SELECT count(user_id) INTO m FROM messages WHERE messages.user_id=old.user_id;
+        IF m = 1 THEN
+        DELETE FROM siteusers WHERE siteusers.id=old.user_id;
+        END IF;
+        DELETE from files where files.id=old.file_id;
+        END
         ');
     }
 
