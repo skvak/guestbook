@@ -9,8 +9,8 @@
 @endsection
 
 @section('content')
-    {{--@include('layouts.error')--}}
-    {{--@include('layouts.info')--}}
+    @include('layouts.error')
+    @include('layouts.info')
     @include('layouts.all_messages')
 @endsection
 
