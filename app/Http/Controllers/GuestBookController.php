@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use DB;
 use Validator;
+use Image;
 
 class GuestBookController extends Controller
 {
@@ -36,6 +37,17 @@ class GuestBookController extends Controller
             ->paginate(25);
 
         return $messages;
+    }
+
+    /**
+     * resize uploaded image file
+     * @param $path path to file
+     * @param $width width
+     * @param $height height
+     */
+    private function resizeImage($path, $width, $height)
+    {
+        Image::make($path)->resize($width, $height)->save($path);
     }
 
     /**
@@ -90,7 +102,7 @@ class GuestBookController extends Controller
         if ($isHuman)
         {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|alpha_num',
+                'name' => 'required|regex:/(^[A-Za-z0-9 ]+$)+/',
                 'email' => 'required|email|unique:siteusers,email',
                 'message' => 'required|string|max:500',
             ]);
@@ -106,29 +118,62 @@ class GuestBookController extends Controller
             $user->homepage = $request->homepage;
             $user->ip = $request->ip();
             $user->browser_name = $request->header('User-Agent');
-            if (!$user->save())
-            {
-                return redirect('/add')->with('status', 'User data save failed!')->withInput();
-            }
 
             $message = new Message;
-            $message->user_id = $user->id;
+            $message->message = strip_tags($request->message);
+
+            $file = null;
 
             if ($request->hasFile('file'))
             {
-                $file = new File;
-                $file->user_id = $user->id;
-                $file->path = $request->filePath;
-                $file->save;
+                $file = $request->file('file');
+                $uploadPath = 'upload';
+                $mime = $file->getClientOriginalExtension();
+                $supportedExtensions = array('png', 'jpg', 'gif', 'txt');
 
-                $message->file_id = $file->id;
+                if (in_array($mime, $supportedExtensions))
+                {
+                    if ($mime === 'txt' && $file->getClientSize() > 102400)
+                    {
+                        return redirect('/add')->with('status', 'Max txt file size 100kB!')->withInput();
+                    }
+
+                    do {
+                        $filename = uniqid("", false) . '.' . $mime;
+                        $path = $uploadPath . '/' . $filename;
+                    } while (file_exists($path));
+
+                    $file->move($uploadPath, $filename);
+
+                    if ($mime !== 'txt')
+                    {
+                        $width = 320;
+                        $height = 240;
+                        $this->resizeImage($path, $width, $height);
+                    }
+
+                    $file = new File;
+                    $file->path = $path;
+                }
+                else
+                {
+                    return redirect('/add')->with('status', 'File type not supported!')->withInput();
+                }
             }
 
-            $message->message = strip_tags($request->message);
-            if (!$message->save())
-            {
-                return redirect('/add')->with('status', 'Message data save failed!')->withInput();
-            }
+            DB::transaction(function() use ($file, $message, $user) {
+                $user->save();
+
+                if ($file !== null)
+                {
+                    $file->user_id = $user->id;
+                    $file->save();
+                    $message->file_id = $file->id;
+                }
+
+                $message->user_id = $user->id;
+                $message->save();
+            });
 
             return redirect('/')->with('status', 'Message saved!');
         }
