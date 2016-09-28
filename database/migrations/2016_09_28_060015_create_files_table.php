@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSiteusersTable extends Migration
+class CreateFilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,10 @@ class CreateSiteusersTable extends Migration
      */
     public function up()
     {
-        Schema::create('siteusers', function (Blueprint $table) {
-            $table->increments('id')->unsigned();
-            $table->string('name');
-            $table->string('email');
-            $table->string('homepage')->nullable();
-            $table->string('ip');
-            $table->string('browser_name');
+        Schema::create('files', function (Blueprint $table) {
+            $table->increments('id')->nullable()->unsigned();
+            $table->integer('user_id');
+            $table->string('path');
             $table->timestamps();
             $table->index('id');
         });
@@ -31,6 +28,6 @@ class CreateSiteusersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('siteusers');
+        Schema::drop('files');
     }
 }

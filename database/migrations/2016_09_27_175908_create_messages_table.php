@@ -12,7 +12,15 @@ class CreateMessagesTable extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('messages', function (Blueprint $table) {
+            $table->increments('id')->unsigned();
+            $table->integer('user_id')->nullable()->unsigned();
+            $table->string('message');
+            $table->integer('file_id')->default(null)->nullable()->unsigned();
+            $table->timestamps();
+            $table->index('user_id');
+            $table->index('file_id');
+        });
     }
 
     /**
@@ -22,6 +30,6 @@ class CreateMessagesTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::drop('messages');
     }
 }
